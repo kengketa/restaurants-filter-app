@@ -2,13 +2,18 @@
 
 namespace App\Actions;
 
+use App\Transformers\GoogleMapTransformer;
 use GuzzleHttp\Client;
 
 class FetchRestaurantAction
 {
-    public function execute(array|null $filters)
+    public function execute(array|null $filters): array
     {
-        $location = $this->getLocationByAddress();
+        $transformedData = [];
+        $location = $this->getLocationByPlace($filters['search']);
+        if ($location == null) {
+            return [];
+        }
         $client = new Client();
         $response = $client->get("https://maps.googleapis.com/maps/api/place/nearbysearch/json", [
             'query' => [
@@ -18,17 +23,21 @@ class FetchRestaurantAction
                 'key' => config('services.google.maps_api_key'),
             ],
         ]);
-        $data = json_decode($response->getBody());
-        dd($data);
+        $rawData = json_decode($response->getBody());
+        if ($rawData->status === 'INVALID_REQUEST') {
+            return [];
+        }
+        $transformedData = fractal($rawData->results, new GoogleMapTransformer())->toArray()['data'];
+        return $transformedData;
     }
 
-    private function getLocationByAddress()
+    private function getLocationByPlace(string|null $search): null|string
     {
         $client = new Client();
         $geocodingUrl = 'https://maps.googleapis.com/maps/api/geocode/json';
         $geocodingParams = [
             'query' => [
-                'address' => 'Bang Sue',
+                'address' => $search,
                 'key' => config('services.google.maps_api_key'),
             ],
         ];
@@ -40,6 +49,6 @@ class FetchRestaurantAction
         $location = $geocodingData['results'][0]['geometry']['location'];
         $latitude = $location['lat'];
         $longitude = $location['lng'];
-        return $latitude . ',' . $longitude;
+        return "$latitude,$longitude";
     }
 }
