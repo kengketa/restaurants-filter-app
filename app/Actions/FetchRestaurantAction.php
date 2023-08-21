@@ -21,7 +21,7 @@ class FetchRestaurantAction
         if (empty($rawData)) {
             return [];
         }
-        $transformedData = fractal($rawData->results, new GoogleMapTransformer())->toArray();
+        $transformedData['data'] = fractal($rawData->results, new GoogleMapTransformer())->toArray()['data'] ?? [];
         $transformedData['meta']['next_page_token'] = isset($rawData?->next_page_token) ? $rawData?->next_page_token : null;
         return $transformedData;
     }
@@ -53,7 +53,7 @@ class FetchRestaurantAction
         $response = $client->get("https://maps.googleapis.com/maps/api/place/nearbysearch/json", [
             'query' => [
                 'location' => $location,
-                'radius' => 1500,
+                'radius' => 10000, // in meters
                 'types' => 'restaurant',
                 'key' => config('services.google.maps_api_key'),
                 'pagetoken' => $nextPageToken

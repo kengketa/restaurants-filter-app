@@ -16,11 +16,11 @@
           <input id="default-search" ref="searchRef"
                  v-model="filters.search"
                  class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                 placeholder="ค้นหา" type="search">
+                 placeholder="ค้นหา" type="search" @keyup.enter="fetchRestaurants('replace')">
           <button
-              class="text-white absolute right-2.5 bottom-2.5 bg-gray-400 hover:bg-gray-500 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 transition-all ease-in-out duration-200"
-              type="button" @click="clearSearch">
-            Clear
+              class="text-white absolute right-2.5 bottom-2.5 bg-blue-400 hover:bg-blue-500 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 transition-all ease-in-out duration-200"
+              type="button" @click="fetchRestaurants('replace')">
+            Search
           </button>
         </div>
       </div>
@@ -29,7 +29,7 @@
       <div class="grid gap-2 md:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <div v-for="(restaurant,index) in restaurants" :key="index"
              class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 transition-all ease-in-out duration-300 hover:scale-105">
-          <a href="#">
+          <a :href="'https://www.google.co.th/maps/search/'+restaurant.name +' '+restaurant.address" target="_blank">
             <img :src="restaurant.photo ?? '/images/fallback.jpeg'" alt=""
                  class="rounded-t-lg object-cover w-full h-60 md:h-40 lg:h-60"/>
           </a>
@@ -81,7 +81,7 @@ export default {
   },
   async mounted() {
     this.$refs.searchRef.focus();
-    await this.fetchRestaurants('replace-mode');
+    await this.fetchRestaurants('replace');
     window.addEventListener('scroll', this.handleScroll);
   },
   methods: {
@@ -90,11 +90,18 @@ export default {
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
       if (scrollY + windowHeight >= documentHeight - 100) {
-        this.fetchRestaurants('scroll-mode');
+        this.fetchRestaurants('scroll');
       }
     },
     fetchRestaurants(mode) {
+      if (mode == 'replace') {
+        this.restaurants = [];
+        this.loaded = false;
+      }
       if (!this.filters.search) {
+        return;
+      }
+      if (mode === 'scroll' && !this.filters.nextPageToken) {
         return;
       }
       clearTimeout(this.debounce)
@@ -104,14 +111,15 @@ export default {
         const res = await axios.get(url, {
           params: this.filters
         });
-        if (mode === 'replace-mode') {
-          this.restaurants = res.data.data;
+        if (mode === 'replace') {
+          this.restaurants = [];
         }
-        if (mode === 'scroll-mode') {
-          res.data.data.forEach(restaurant => {
-            this.restaurants.push(restaurant);
-          })
+        if (res.data.length === 0) {
+          return;
         }
+        res.data.data.forEach(restaurant => {
+          this.restaurants.push(restaurant);
+        })
         this.filters.nextPageToken = res.data.meta.next_page_token
         this.loaded = true;
       }, 1000);
@@ -122,8 +130,7 @@ export default {
   },
   watch: {
     'filters.search': function () {
-      this.restaurants = [];
-      this.fetchRestaurants('replace-mode');
+      this.filters.nextPageToken = null;
     },
   }
 };

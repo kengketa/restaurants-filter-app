@@ -9,12 +9,14 @@ use http\Client\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class RestaurantController extends Controller
 {
     public function fetch(FetchRestaurantRequest $request, FetchRestaurantAction $action): JsonResponse
     {
-        $cacheKey = 'search-cache-' . trim($request['search']) . '-' . $request['nextPageToken'];
+        $cacheKey = 'search-cache-' . str_replace(' ', '-', $request['search']) . '-' . $request['nextPageToken'];
         Cache::forget($cacheKey);
         $restaurantData = Cache::remember($cacheKey, now()->addHours(24), function () use ($request, $action) {
             $restaurants = $action->execute($request->validated());

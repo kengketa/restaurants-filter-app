@@ -7,60 +7,95 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## Project Setup README
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This README file provides instructions on how to set up the project on your local machine. Please follow these steps to
+get the project up and running.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Prerequisites
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Before you begin, make sure you have the following software installed on your machine:
 
-## Learning Laravel
+- Git
+- Composer
+- Docker
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Steps to Set Up the Project
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- Clone the Repository
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Open your terminal and navigate to the directory where you want to set up the project. Then, execute the following
+  command to clone the repository:
 
-## Laravel Sponsors
+```bash
+git clone <repository_url> <project_folder>
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Replace <repository_url> with the URL of the repository and <project_folder> with the desired name for the project
+folder.
 
-### Premium Partners
+## Install Dependencies
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+Navigate to the project folder using the terminal:
 
-## Contributing
+```bash
+cd <project_folder>
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Run the following command to install the project dependencies using Composer:
 
-## Code of Conduct
+```bash
+composer install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Create Configuration File
+Copy the .env_example file and rename it to .env:
 
-## Security Vulnerabilities
+```bash
+cp .env_example .env
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Creat application key
 
-## License
+```bash
+./vendor/bin/sail php artisan key:generate
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+You can now edit the .env file to set up your environment configuration, such as database connection settings.
+
+## Launch Docker Environment
+
+- Run the following Docker command to start the development environment:
+
+```bash
+./vendor/bin/sail up -d --build
+```
+
+OR
+
+```bash
+docker compose up -docker --build
+```
+
+This command will create and start the necessary containers for your project.
+
+## Run Database Migrations and Seeding
+
+Execute the following command to run database migrations and seed the database with initial data:
+
+```bash
+./vendor/bin/sail php artisan migrate:fresh --seed
+```
+
+## Accessing the Application
+
+Once you've completed the setup steps, you can access the application in your web browser by navigating to:
+
+http://localhost:8000
+This URL will point to your locally running application.
+
+## Wrapping Up
+
+This project sample is done by [Sutjapong (kengketa)](https://github.com/kengketa), Senior Full-Stack Developer,
+Thailand.
+
