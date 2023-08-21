@@ -115,6 +115,7 @@ export default {
           this.restaurants = [];
         }
         if (res.data.length === 0) {
+          this.loaded = true;
           return;
         }
         res.data.data.forEach(restaurant => {
