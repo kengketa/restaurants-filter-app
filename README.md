@@ -55,17 +55,29 @@ Copy the .env_example file and rename it to .env:
 cp .env_example .env
 ```
 
+You can now edit the .env file to set up your environment configuration, such as database connection settings.
+
 Creat application key
 
 ```bash
 ./vendor/bin/sail php artisan key:generate
 ```
 
-You can now edit the .env file to set up your environment configuration, such as database connection settings.
+## Install Frontend packages
+
+```bash
+./vendor/bin/sail npm install
+```
+
+## Build Frontend
+
+```bash
+./vendor/bin/sail npm run build
+```
 
 ## Launch Docker Environment
 
-- Run the following Docker command to start the development environment:
+Run the following Docker command to start the development environment:
 
 ```bash
 ./vendor/bin/sail up -d --build
