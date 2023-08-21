@@ -10,6 +10,7 @@ class FetchRestaurantRequest extends FormRequest
     {
         $rules = [
             'search' => ['nullable'],
+            'nextPageToken' => ['nullable']
         ];
         return $rules;
     }

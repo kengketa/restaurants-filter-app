@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full bg-gray-100 p-4 min-h-screen">
+  <div class="w-full bg-gray-100 dark:bg-gray-800 p-4 min-h-screen">
     <div class="w-full lg:w-1/2">
       <div>
         <label class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
@@ -26,7 +26,7 @@
       </div>
     </div>
     <div class="flex flex-col items-center mt-6">
-      <div v-if="loaded" class="grid gap-2 md:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div class="grid gap-2 md:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <div v-for="(restaurant,index) in restaurants" :key="index"
              class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 transition-all ease-in-out duration-300 hover:scale-105">
           <a href="#">
@@ -71,7 +71,8 @@ export default {
   data() {
     return {
       filters: {
-        search: 'Bang sue'
+        search: 'Bang sue',
+        nextPageToken: null
       },
       restaurants: [],
       debounce: null,
@@ -80,11 +81,19 @@ export default {
   },
   async mounted() {
     this.$refs.searchRef.focus();
-    await this.fetchRestaurants();
-
+    await this.fetchRestaurants('replace-mode');
+    window.addEventListener('scroll', this.handleScroll);
   },
   methods: {
-    fetchRestaurants() {
+    handleScroll() {
+      const scrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      if (scrollY + windowHeight >= documentHeight - 100) {
+        this.fetchRestaurants('scroll-mode');
+      }
+    },
+    fetchRestaurants(mode) {
       if (!this.filters.search) {
         return;
       }
@@ -95,21 +104,27 @@ export default {
         const res = await axios.get(url, {
           params: this.filters
         });
-        this.restaurants = res.data;
+        if (mode === 'replace-mode') {
+          this.restaurants = res.data.data;
+        }
+        if (mode === 'scroll-mode') {
+          res.data.data.forEach(restaurant => {
+            this.restaurants.push(restaurant);
+          })
+        }
+        this.filters.nextPageToken = res.data.meta.next_page_token
         this.loaded = true;
       }, 1000);
     },
     clearSearch() {
-      this.filters.search = 'Bang sue';
+      this.filters.search = 'เชียงราย';
     }
   },
   watch: {
-    filters: {
-      deep: true,
-      handler() {
-        this.fetchRestaurants();
-      }
-    }
+    'filters.search': function () {
+      this.restaurants = [];
+      this.fetchRestaurants('replace-mode');
+    },
   }
 };
 </script>

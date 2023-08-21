@@ -14,7 +14,8 @@ class RestaurantController extends Controller
 {
     public function fetch(FetchRestaurantRequest $request, FetchRestaurantAction $action): JsonResponse
     {
-        $cacheKey = 'search-cache-' . trim($request['search']);
+        $cacheKey = 'search-cache-' . trim($request['search']) . '-' . $request['nextPageToken'];
+        Cache::forget($cacheKey);
         $restaurantData = Cache::remember($cacheKey, now()->addHours(24), function () use ($request, $action) {
             $restaurants = $action->execute($request->validated());
             return $restaurants;
