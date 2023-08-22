@@ -20,18 +20,21 @@ class FetchRestaurantAction
             $location,
             $filters['nextPageToken'] ?? null
         ); // use the location to find restaurant nearby the keyword
-        if (empty($rawData)) {
+        if ($rawData == null) {
             $transformedData['data'] = [];
             $transformedData['meta'] = [];
             return $transformedData;
         }
         $transformedData['data'] = fractal($rawData->results, new GoogleMapTransformer())->toArray()['data'] ?? [];
-        $transformedData['meta']['next_page_token'] = isset($rawData?->next_page_token) ? $rawData?->next_page_token : null;
+        $transformedData['meta']['next_page_token'] = isset($rawData?->next_page_token) ? $rawData->next_page_token : null;
         return $transformedData;
     }
 
     private function getLocationByPlace(string|null $search): null|string
     {
+        if ($search == null) {
+            return null;
+        }
         $client = new Client();
         $geocodingUrl = 'https://maps.googleapis.com/maps/api/geocode/json';
         $geocodingParams = [
@@ -51,7 +54,7 @@ class FetchRestaurantAction
         return "$latitude,$longitude";
     }
 
-    private function getRestaurantsByLocation(string $location, string|null $nextPageToken)
+    private function getRestaurantsByLocation(string $location, string|null $nextPageToken): object|null
     {
         $client = new Client();
         $response = $client->get("https://maps.googleapis.com/maps/api/place/nearbysearch/json", [
@@ -65,7 +68,7 @@ class FetchRestaurantAction
         ]);
         $rawData = json_decode($response->getBody());
         if ($rawData->status === 'INVALID_REQUEST') {
-            return [];
+            return null;
         }
         return $rawData;
     }
