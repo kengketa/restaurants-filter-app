@@ -12,14 +12,18 @@ class FetchRestaurantAction
         $transformedData = [];
         $location = $this->getLocationByPlace($filters['search']); // get location by user's search text
         if ($location == null) {
-            return [];
+            $transformedData['data'] = [];
+            $transformedData['meta'] = [];
+            return $transformedData;
         }
         $rawData = $this->getRestaurantsByLocation(
             $location,
             $filters['nextPageToken'] ?? null
         ); // use the location to find restaurant nearby the keyword
         if (empty($rawData)) {
-            return [];
+            $transformedData['data'] = [];
+            $transformedData['meta'] = [];
+            return $transformedData;
         }
         $transformedData['data'] = fractal($rawData->results, new GoogleMapTransformer())->toArray()['data'] ?? [];
         $transformedData['meta']['next_page_token'] = isset($rawData?->next_page_token) ? $rawData?->next_page_token : null;
@@ -53,7 +57,7 @@ class FetchRestaurantAction
         $response = $client->get("https://maps.googleapis.com/maps/api/place/nearbysearch/json", [
             'query' => [
                 'location' => $location,
-                'radius' => 10000, // in meters
+                'radius' => 50000, // in meters
                 'types' => 'restaurant',
                 'key' => config('services.google.maps_api_key'),
                 'pagetoken' => $nextPageToken

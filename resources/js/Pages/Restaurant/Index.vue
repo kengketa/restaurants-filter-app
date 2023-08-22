@@ -77,6 +77,7 @@ export default {
       restaurants: [],
       debounce: null,
       loaded: false,
+      noFurtherLoad: false
     };
   },
   async mounted() {
@@ -97,8 +98,9 @@ export default {
       if (mode == 'replace') {
         this.restaurants = [];
         this.loaded = false;
+        this.noFurtherLoad = false;
       }
-      if (!this.filters.search) {
+      if (!this.filters.search || this.noFurtherLoad) {
         return;
       }
       if (mode === 'scroll' && !this.filters.nextPageToken) {
@@ -114,9 +116,9 @@ export default {
         if (mode === 'replace') {
           this.restaurants = [];
         }
-        if (res.data.length === 0) {
+        if (!res.data.meta.next_page_token) {
           this.loaded = true;
-          return;
+          this.noFurtherLoad = true;
         }
         res.data.data.forEach(restaurant => {
           this.restaurants.push(restaurant);
