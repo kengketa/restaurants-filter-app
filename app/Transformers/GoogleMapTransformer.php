@@ -18,7 +18,7 @@ class GoogleMapTransformer extends TransformerAbstract
         $data = [
             'name' => $restaurant->name,
             'photo' => $this->getImage($photo?->photo_reference),
-            'address' => $restaurant->vicinity
+            'address' => $restaurant->formatted_address
         ];
         return $data;
     }
