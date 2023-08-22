@@ -16,7 +16,7 @@ class FetchRestaurantAction
             $transformedData['meta'] = [];
             return $transformedData;
         }
-        $transformedData['data'] = fractal($rawData->results, new GoogleMapTransformer())->toArray()['data'] ?? [];
+        $transformedData['data'] = fractal($rawData->results, new GoogleMapTransformer())->toArray()['data'];
         $transformedData['meta']['next_page_token'] = isset($rawData?->next_page_token) ? $rawData->next_page_token : null;
         return $transformedData;
     }
