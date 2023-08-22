@@ -117,7 +117,6 @@ export default {
           this.restaurants = [];
         }
         if (!res.data.meta.next_page_token) {
-          this.loaded = true;
           this.noFurtherLoad = true;
         }
         res.data.data.forEach(restaurant => {
