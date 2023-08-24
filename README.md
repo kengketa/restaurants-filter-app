@@ -57,6 +57,22 @@ cp .env_example .env
 
 You can now edit the .env file to set up your environment configuration, such as database connection settings.
 
+## Launch Docker Environment
+
+Run the following Docker command to start the development environment:
+
+```bash
+./vendor/bin/sail up -d --build
+```
+
+OR
+
+```bash
+docker compose up -docker --build
+```
+
+This command will create and start the necessary containers for your project.
+
 Creat application key
 
 ```bash
@@ -74,22 +90,6 @@ Creat application key
 ```bash
 ./vendor/bin/sail npm run build
 ```
-
-## Launch Docker Environment
-
-Run the following Docker command to start the development environment:
-
-```bash
-./vendor/bin/sail up -d --build
-```
-
-OR
-
-```bash
-docker compose up -docker --build
-```
-
-This command will create and start the necessary containers for your project.
 
 ## Run Database Migrations and Seeding
 
